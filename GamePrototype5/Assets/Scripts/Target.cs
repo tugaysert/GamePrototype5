@@ -41,9 +41,14 @@ public class Target : MonoBehaviour
 
     private void OnMouseDown()
     {
-        Destroy(gameObject);
-        gameManagerScript.UpdateScore(pointValue);
-        Instantiate(explosionParticle, transform.position, explosionParticle.transform.rotation);       
+        if(gameManagerScript.isGameActive)
+        {
+            Destroy(gameObject);
+            Instantiate(explosionParticle, transform.position, explosionParticle.transform.rotation);
+            gameManagerScript.UpdateScore(pointValue);
+        }
+
+            
     }
 
     private void OnTriggerEnter(Collider other)
@@ -51,6 +56,11 @@ public class Target : MonoBehaviour
         if (other.gameObject.CompareTag("Sensor"))
         {
             Destroy(gameObject);
+        }
+
+        if(!gameObject.CompareTag("Bad"))
+        {
+            gameManagerScript.GameOver();
         }
         
     }
