@@ -8,7 +8,8 @@ using UnityEngine.UI;
 public class GameManagerX : MonoBehaviour
 {
     public TextMeshProUGUI scoreText;
-    public TextMeshProUGUI timeText;
+    public TextMeshProUGUI timeText1;
+    public TextMeshProUGUI timeText2;
     public TextMeshProUGUI gameOverText;
     public GameObject titleScreen;
     public Button restartButton; 
@@ -16,6 +17,7 @@ public class GameManagerX : MonoBehaviour
     public List<GameObject> targetPrefabs;
 
     private int score;
+    public float gameTime1;
     public float gameTime2 = 60.0f;
     private float spawnRate = 1.5f;
     public bool isGameActive;
@@ -29,6 +31,7 @@ public class GameManagerX : MonoBehaviour
     {   
         spawnRate /=  ((float)difficulty / 1.2f);
         isGameActive = true;
+        StartCoroutine(GameTimeCountDown(60.0f));
         StartCoroutine(SpawnTarget());
         score = 0;
         UpdateScore(0);
@@ -37,10 +40,7 @@ public class GameManagerX : MonoBehaviour
 
     private void Update()
     {
-        while (isGameActive)
-        {
-            UpdateTime();
-        }
+        UpdateTime();
             
     }
 
@@ -61,6 +61,30 @@ public class GameManagerX : MonoBehaviour
         }
     }
 
+    IEnumerator GameTimeCountDown(float gameTime)
+    {
+        this.gameTime1 = gameTime;  
+        while(isGameActive)
+        {
+            timeText1.text = "Time: " + (int)Mathf.Round(gameTime);
+            yield return new WaitForSeconds(1.0f);
+            gameTime--;
+            if(gameTime < 0) { GameOver(); }
+        }
+    }
+    public void UpdateTime()
+    {
+        if(isGameActive) { 
+        gameTime2 -= Time.deltaTime;
+        timeText2.text = "Time: " + Mathf.RoundToInt(gameTime2);
+        if (gameTime2 < 0) { GameOver(); }
+        }
+    }
+
+
+
+
+
     // Generate a random spawn position based on a random index from 0 to 3
     Vector3 RandomSpawnPosition()
     {
@@ -80,14 +104,7 @@ public class GameManagerX : MonoBehaviour
 
     // Update score with value from target clicked
 
-    public void UpdateTime()
-    {
-       
-        gameTime2 -= Time.deltaTime;
-       
-       timeText.text = "Time: " + (int)Mathf.Round(gameTime2);
-    }
-
+   
     public void UpdateScore(int scoreToAdd)
     {
         score += scoreToAdd;
